@@ -1,0 +1,33 @@
+{
+  "operator": "Mitchell Crowther",
+  "location": "Perth WA",
+  "timezone": "Australia/Perth",
+  "host": "127.0.0.1",
+  "port": 8765,
+  "open_browser": true,
+  "checkin_time": "1900",
+  "fifo": {
+    "enabled": false,
+    "roster_start": "2026-10-19",
+    "days_on": 14,
+    "days_off": 7
+  },
+  "ollama": {
+    "enabled": false,
+    "url": "http://127.0.0.1:11434",
+    "model": "llama3.1:8b",
+    "timeout": 60
+  },
+  "vision": {
+    "enabled": false,
+    "source": "upload",
+    "hyperlapse": false,
+    "interval_s": 120,
+    "model": "llava",
+    "keep_frames": 200
+  },
+  "ambient": {
+    "interval_s": 20,
+    "speak_priority": true
+  }
+}

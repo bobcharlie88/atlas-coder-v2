@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATLAS — Field intelligence</title><link rel="stylesheet" href="/static/atlas.css"></head>
+<body>
+<header>
+  <div class="brand"><span class="word">ATLAS</span><span class="sub">Field intelligence — builder's node</span></div>
+  <div class="hdr-right">
+    <span id="clock" class="clock">----</span><span id="phase" class="pill">—</span>
+    <span id="conn" class="pill">link —</span><span id="led" class="pill">eye IDLE</span><span id="sbx" class="pill">sandbox —</span>
+    <button id="councilBtn" class="btn">Council</button>
+  </div>
+</header>
+<div id="preds" class="preds"><span class="small">Predictions —</span></div>
+<main>
+  <section class="panel chat">
+    <h2>Transcript</h2>
+    <div id="msgs" class="msgs"></div>
+    <form id="chatForm" class="chatform">
+      <input id="chatIn" autocomplete="off" placeholder="Speak to ATLAS — try: status · log: … · risk: … · task: … · recall: … · council: …">
+      <button class="btn primary">Send</button>
+    </form>
+  </section>
+  <section class="panel board">
+    <nav class="tabs">
+      <button data-tab="notebook" class="on">Notebook</button><button data-tab="protocol">Protocol</button>
+      <button data-tab="tasks">Tasks</button><button data-tab="workspace">Workspace</button>
+      <button data-tab="quarantine">Quarantine</button><button data-tab="recall">Recall</button><button data-tab="world">World</button><button data-tab="vision">Vision</button>
+    </nav>
+    <div id="tab-notebook" class="tab on">
+      <form id="nbForm" class="row">
+        <select id="nbQuad"><option value="known">Known</option><option value="unknown">Unknown</option><option value="risk">Risk</option><option value="opportunity">Opportunity</option></select>
+        <input id="nbTitle" placeholder="Title" required><input id="nbBody" placeholder="Detail"><button class="btn">Log</button>
+      </form>
+      <div class="quads">
+        <div class="quad" data-q="known"><h3>Known</h3><div class="list"></div></div>
+        <div class="quad" data-q="unknown"><h3>Unknown</h3><div class="list"></div></div>
+        <div class="quad risk" data-q="risk"><h3>Risk</h3><div class="list"></div></div>
+        <div class="quad opp" data-q="opportunity"><h3>Opportunity</h3><div class="list"></div></div>
+      </div>
+    </div>
+    <div id="tab-protocol" class="tab">
+      <div id="assess" class="assess">—</div>
+      <h3>Pre-departure checks</h3><div id="checks"></div>
+      <form id="checkForm" class="row"><input id="checkLabel" placeholder="Add check" required><label class="small"><input type="checkbox" id="checkCrit"> critical</label><button class="btn">Add</button><button type="button" id="resetChecks" class="btn ghost">Reset sequence</button></form>
+      <h3>Reserves</h3><div id="reserves" class="reserves"></div>
+    </div>
+    <div id="tab-tasks" class="tab">
+      <form id="taskForm" class="row"><input id="taskIn" placeholder="New task" required><button class="btn">Queue</button></form>
+      <div id="tasks"></div>
+    </div>
+    <div id="tab-workspace" class="tab">
+      <div class="split">
+        <div><div class="row"><input id="wsNew" placeholder="new-file.md"><button id="wsCreate" class="btn">New</button></div><div id="wsList" class="filelist"></div></div>
+        <div class="editor"><div class="row"><b id="wsName">—</b><span class="grow"></span><button id="wsSave" class="btn">Save</button><button id="wsDel" class="btn ghost">Delete</button></div><textarea id="wsText" spellcheck="false"></textarea></div>
+      </div>
+    </div>
+    <div id="tab-quarantine" class="tab">
+      <p class="small">Untrusted content is held here as inert text. Nothing executes. Promotion to workspace requires your explicit confirmation.</p>
+      <form id="qForm" class="col"><input id="qName" placeholder="name (e.g. burst-0417)" required><input id="qOrigin" placeholder="origin (e.g. radio, email, USB)"><textarea id="qContent" placeholder="Paste untrusted content" required></textarea><button class="btn">Quarantine</button></form>
+      <div class="split"><div id="qList" class="filelist"></div><pre id="qView" class="qview">Select an item to inspect.</pre></div>
+    </div>
+    <div id="tab-recall" class="tab">
+      <form id="recallForm" class="row"><input id="recallIn" placeholder="What did we log about…" required><button class="btn">Recall</button></form>
+      <div id="recallOut"></div>
+    </div>
+    <div id="tab-world" class="tab">
+      <p class="small">What ATLAS has observed about your environment. Entries marked <i>inferred</i> are inferences, not facts. Delete anything.</p>
+      <div id="worldSum" class="row"></div>
+      <form id="worldForm" class="row"><select id="wKind"><option>person</option><option>place</option><option>object</option><option>routine</option><option>preference</option><option>event</option></select><input id="wSubj" placeholder="Subject (e.g. Toyota 79 Series)" required><input id="wDet" placeholder="Detail"><button class="btn">Teach</button></form>
+      <h3>Routines (inferred)</h3><div id="routines" class="small"></div>
+      <h3>Observations</h3><div id="obs"></div>
+    </div>
+    <div id="tab-vision" class="tab">
+      <div class="assess">ATLAS sees only when you allow it. Frames stay on this machine under data/vision/. Nothing is uploaded. Hyperlapse takes one still per interval — not video.</div>
+      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="vEnabled"> Vision enabled</label><label><input type="checkbox" id="vCont"> Hyperlapse</label>
+        <select id="vSource"><option value="upload">upload</option><option value="webcam">webcam</option><option value="meta_bridge">meta_bridge</option></select>
+        <label class="small">every <select id="vFps"><option value="30">30 s</option><option value="60">1 min</option><option value="120">2 min</option><option value="300">5 min</option><option value="900">15 min</option></select></label></div>
+      <div class="row"><input type="file" id="vFile" accept="image/*"><button id="vSend" class="btn">Send frame</button><button id="vClear" class="btn ghost">Clear frames</button></div>
+      <div class="split"><img id="vImg" class="vimg" alt=""><div><div id="vCap" class="synth">No frame.</div><p id="vInfo" class="small"></p></div></div>
+    </div>
+  </section>
+  <section class="panel log"><h2>Event log</h2><div id="events" class="events"></div></section>
+</main>
+<aside id="council" class="drawer">
+  <div class="row"><h2>Council</h2><span class="grow"></span><button id="councilClose" class="btn ghost">Close</button></div>
+  <p class="small">Three perspectives: Risk, Opportunity, Evidence. Parallel shows all three; Council synthesises one recommendation.</p>
+  <form id="councilForm" class="col"><input id="councilQ" placeholder="Question (e.g. push to the creek crossing today?)">
+    <div class="row"><button class="btn primary" data-mode="council">Council</button><button class="btn" data-mode="parallel">Parallel</button></div></form>
+  <div id="councilOut"></div>
+</aside>
+<footer id="strip" class="strip"></footer>
+<script src="/static/atlas.js"></script>
+</body></html>
