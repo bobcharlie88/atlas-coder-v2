@@ -421,9 +421,39 @@ app.mount("/static", StaticFiles(directory=STATIC), name="static")
 @app.get("/")
 def index(): return FileResponse(STATIC / "index.html")
 
+def _open_atlas_ui(url: str) -> None:
+    """Prefer a real browser — avoid apps that hijack the http handler (e.g. DeepSeek)."""
+    if sys.platform == "win32":
+        import shutil, subprocess
+        candidates = [
+            shutil.which("msedge"),
+            shutil.which("chrome"),
+            r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        ]
+        for exe in candidates:
+            if exe and Path(exe).exists():
+                try:
+                    subprocess.Popen([exe, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    return
+                except OSError:
+                    pass
+        # Last resort: explorer (still may hit a hijacked default)
+        try:
+            os.startfile(url)  # type: ignore[attr-defined]
+            return
+        except OSError:
+            pass
+    webbrowser.open(url)
+
+
 if __name__ == "__main__":
     host, port = CFG.get("host", "127.0.0.1"), int(CFG.get("port", 8765))
+    url = f"http://{host}:{port}/"
     if "--no-browser" not in sys.argv and CFG.get("open_browser", True):
-        threading.Timer(1.5, lambda: webbrowser.open(f"http://{host}:{port}/")).start()
-    print(f"ATLAS {VERSION} — http://{host}:{port}/  (Ctrl+C to stop)")
+        threading.Timer(1.5, lambda: _open_atlas_ui(url)).start()
+    print(f"ATLAS {VERSION} — {url}  (Ctrl+C to stop)")
+    print("If DeepSeek or another app opens: leave this window running, then paste that URL into Edge or Chrome.")
     uvicorn.run(app, host=host, port=port, log_level="warning")
