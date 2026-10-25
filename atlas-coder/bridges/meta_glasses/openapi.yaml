@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: ATLAS vision ingest — Meta glasses phone bridge contract
+  version: "1.0"
+  description: |
+    The phone companion app (built on Meta Wearables Device Access Toolkit) takes one still
+    (periodic capturePhoto, NOT the 24–30 fps stream) every hyperlapse interval — default 120 s,
+    matching ATLAS vision.interval_s — and receives camera
+    stills from Ray-Ban Meta / Oakley Meta glasses and POSTs them to ATLAS on the local network.
+    ATLAS must have vision.enabled=true or it returns 403. Frames stay on the ATLAS machine.
+servers: [{url: "http://<atlas-host>:8765"}]
+paths:
+  /api/vision/ingest:
+    post:
+      summary: Submit one hyperlapse still (JPEG, base64)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [image_b64]
+              properties:
+                image_b64: {type: string, description: "JPEG bytes, base64 (data: URL prefix allowed)"}
+                device_id: {type: string, example: "rayban-meta-01"}
+                timestamp: {type: string, format: date-time}
+                gps: {type: object, properties: {lat: {type: number}, lon: {type: number}, acc_m: {type: number}}}
+      responses:
+        "200": {description: "Frame stored, captioned, fed to world model; returns caption + refreshed predictions"}
+        "403": {description: "Vision disabled on ATLAS (consent off)"}
+        "413": {description: "Frame larger than 15 MB"}
